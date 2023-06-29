@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
+import ItemList from './ItemList.vue'
 
 let link = ''
 let videoData = {}
@@ -55,6 +56,7 @@ async function getInfo() {
       try {
         await axios.post(apiUlr + '/album', newVideo)
         getVideoList()
+        link = ''
       } catch (e) {
         console.log('No fue posible agregar el video')
       }
@@ -72,7 +74,8 @@ onMounted(async () => await getVideoList())
 
 <template>
   <div class="container">
-    <div class="mt-5">
+
+    <div class="my-5 pb-5">
       <div class="content">
         <h2>Añadir nuevo video</h2>
       </div>
@@ -85,5 +88,12 @@ onMounted(async () => await getVideoList())
         </div>
       </div>
     </div>
+
+    <div class="columns is-multiline pt-5 mt-5">
+      <template v-for="video in videoList">
+        <ItemList :item="video" />
+      </template>
+    </div>
+
   </div>
 </template>
