@@ -1,8 +1,21 @@
 <script setup>
+import { ref, onMounted } from 'vue'
 import axios from 'axios'
 
 let link = ''
 let videoData = {}
+let apiUlr = import.meta.env.VITE_BACK_DIR
+const videoList = ref([])
+
+async function getVideoList() {
+  try {
+    const response = await axios.get(apiUlr + '/album')
+    videoList.value = response.data
+  } catch (e) {
+    console.log('No fue posible obtener la lista de videos')
+    console.log(e)
+  }
+}
 
 function getVideoId() {
   let videoId = ''
@@ -20,6 +33,11 @@ function isValidUrl() {
   return aux.includes('www.youtube.com') || aux.includes('youtu.be')
 }
 
+function getTime(duration) {
+  const aux = duration.replace('H', ':').replace('M', ':')
+  return aux.split('S')[0].split('PT')[1]
+}
+
 async function getInfo() {
   if (isValidUrl()) {
     let videoId = getVideoId()
@@ -27,7 +45,19 @@ async function getInfo() {
     try {
       const response = await axios.get(url)
       videoData = response.data
-      console.log(videoData)
+      const newVideo = {
+        videoId: videoData.items[0].id,
+        title: videoData.items[0].snippet.title,
+        description: videoData.items[0].snippet.description,
+        thumbUrl: videoData.items[0].snippet.thumbnails.medium.url,
+        duration: getTime(videoData.items[0].contentDetails.duration)
+      }
+      try {
+        await axios.post(apiUlr + '/album', newVideo)
+        getVideoList()
+      } catch (e) {
+        console.log('No fue posible agregar el video')
+      }
     } catch (e) {
       console.log('Hubo un error al obtener la data')
     }
@@ -35,6 +65,8 @@ async function getInfo() {
     console.log('Dirección no es enlace de youtube válido')
   }
 }
+
+onMounted(async () => await getVideoList())
 
 </script>
 
