@@ -19,7 +19,7 @@ const fullDesc = computed(() => {
 const videoEmb = computed(() => {
   let url = ''
   if (Object.keys(props.item).length > 0) {
-    url = 'https://www.youtube.com/embed/' + props.item.youtubeID + '?autoplay=1'
+    url = 'https://www.youtube.com/embed/' + props.item.youtubeId + '?autoplay=1'
   }
   return url
 })
@@ -49,7 +49,12 @@ function stopVideo() {
               </iframe>
             </div>
             <div v-else>
-              <a @click="playVideo"><img :src="props.item.stdUrl" alt="Video Youtube"></a>
+              <div class="new-container">
+                <img :src="props.item.stdUrl" alt="Video Youtube">
+                <a @click="playVideo">
+                  <img class="img-centered ytb-btn" src="https://developers.google.com/site-assets/logo-youtube.svg" alt="Play" srcset="" sizes="64px">
+                </a>
+              </div>
             </div>
           </div>
           <div class="column is-7">

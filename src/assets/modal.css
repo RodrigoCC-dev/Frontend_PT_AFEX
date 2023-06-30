@@ -9,6 +9,18 @@
   right: 16px
 }
 
+.img-centered {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.ytb-btn {
+  height: auto;
+  width: 100px;
+}
+
 .new-modal-content {
   margin: 0 20px;
   max-height: calc(100vh - 160px);
