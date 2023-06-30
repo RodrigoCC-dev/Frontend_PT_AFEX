@@ -1,7 +1,9 @@
 <script setup>
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
 
 const props = defineProps(['item', 'show'])
+const emit = defineEmits(['closeModal'])
+let viewVideo = ref(false)
 
 const fullDesc = computed(() => {
   let list = []
@@ -14,6 +16,23 @@ const fullDesc = computed(() => {
   return list.join('')
 })
 
+const videoEmb = computed(() => {
+  let url = ''
+  if (Object.keys(props.item).length > 0) {
+    url = 'https://www.youtube.com/embed/' + props.item.youtubeID + '?autoplay=1'
+  }
+  return url
+})
+
+function playVideo() {
+  viewVideo.value = true
+}
+
+function stopVideo() {
+  viewVideo.value = false
+  emit('closeModal')
+}
+
 </script>
 
 <template>
@@ -21,10 +40,17 @@ const fullDesc = computed(() => {
     <div class="modal-background"></div>
     <div class="new-modal-content">
       <div class="box new-container">
-        <button class="delete top-right" @click="$emit('closeModal')"></button>
+        <button class="delete top-right" @click="stopVideo"></button>
         <div class="columns is-vcentered">
           <div class="column is-5">
-            <img :src="props.item.stdUrl" alt="Video Youtube">
+            <div v-if="viewVideo">
+              <iframe width="470" height="352"
+              :src="videoEmb">
+              </iframe>
+            </div>
+            <div v-else>
+              <a @click="playVideo"><img :src="props.item.stdUrl" alt="Video Youtube"></a>
+            </div>
           </div>
           <div class="column is-7">
             <div class="content">
