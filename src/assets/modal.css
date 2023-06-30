@@ -1,0 +1,10 @@
+.new-container {
+  position: relative;
+  text-align: left;
+}
+
+.top-right {
+  position: absolute;
+  top: 12px;
+  right: 16px
+}

@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import ItemList from './ItemList.vue'
+import Modal from './Modal.vue'
 
 let link = ''
 let videoData = {}
@@ -9,6 +10,7 @@ let apiUrl = import.meta.env.VITE_BACK_DIR
 const videoList = ref([])
 let showConfirm = ref(false)
 let idDeleted = 0
+let showModal = ref(false)
 let itemShow = {}
 
 async function getVideoList() {
@@ -60,7 +62,8 @@ async function getInfo() {
         videoId: videoData.items[0].id,
         title: videoData.items[0].snippet.title,
         description: videoData.items[0].snippet.description,
-        thumbUrl: videoData.items[0].snippet.thumbnails.medium.url,
+        mediumUrl: videoData.items[0].snippet.thumbnails.medium.url,
+        stdUrl: videoData.items[0].snippet.thumbnails.standard.url,
         duration: getTime(videoData.items[0].contentDetails.duration)
       }
       try {
@@ -78,8 +81,14 @@ async function getInfo() {
   }
 }
 
-function showVideo(id) {
-  console.log('Video desde album: ', id)
+function showVideo(item) {
+  itemShow = item
+  showModal.value = true
+}
+
+function closeModal() {
+  showModal.value = false
+  itemShow = {}
 }
 
 function deleteVideo(id) {
@@ -131,6 +140,8 @@ onMounted(async () => await getVideoList())
       </template>
     </div>
 
+    <Modal :item="itemShow" :show="showModal" @close-modal="closeModal" />
+
     <div class="modal" :class="{ 'is-active': showConfirm }">
       <div class="modal-background"></div>
       <div class="modal-content">
@@ -165,14 +176,5 @@ onMounted(async () => await getVideoList())
 </template>
 
 <style scoped>
-.new-container {
-  position: relative;
-  text-align: left;
-}
-
-.top-right {
-  position: absolute;
-  top: 12px;
-  right: 16px
-}
+@import '../assets/modal.css';
 </style>
