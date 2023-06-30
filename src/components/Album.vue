@@ -5,12 +5,15 @@ import ItemList from './ItemList.vue'
 
 let link = ''
 let videoData = {}
-let apiUlr = import.meta.env.VITE_BACK_DIR
+let apiUrl = import.meta.env.VITE_BACK_DIR
 const videoList = ref([])
+let showConfirm = ref(false)
+let idDeleted = 0
+let itemShow = {}
 
 async function getVideoList() {
   try {
-    const response = await axios.get(apiUlr + '/album')
+    const response = await axios.get(apiUrl + '/album')
     videoList.value = response.data
   } catch (e) {
     console.log('No fue posible obtener la lista de videos')
@@ -35,8 +38,15 @@ function isValidUrl() {
 }
 
 function getTime(duration) {
+  let list = []
   const aux = duration.replace('H', ':').replace('M', ':')
-  return aux.split('S')[0].split('PT')[1]
+  const time = aux.split('S')[0].split('PT')[1]
+  const array = time.split(':')
+  list.push(array[0])
+  for (let i = 1; i < array.length; i++) {
+    array[i].length === 1 ? list.push('0' + array[i]) : list.push(array[i])
+  }
+  return list.join(':')
 }
 
 async function getInfo() {
@@ -54,7 +64,7 @@ async function getInfo() {
         duration: getTime(videoData.items[0].contentDetails.duration)
       }
       try {
-        await axios.post(apiUlr + '/album', newVideo)
+        await axios.post(apiUrl + '/album', newVideo)
         getVideoList()
         link = ''
       } catch (e) {
@@ -66,6 +76,32 @@ async function getInfo() {
   } else {
     console.log('Dirección no es enlace de youtube válido')
   }
+}
+
+function showVideo(id) {
+  console.log('Video desde album: ', id)
+}
+
+function deleteVideo(id) {
+  idDeleted = id
+  showConfirm.value = true
+}
+
+function cancelDelete() {
+  showConfirm.value = false
+  idDeleted = 0
+}
+
+async function confirmDelete() {
+  try {
+    const response = await axios.delete(apiUrl + '/album/' + idDeleted)
+    getVideoList()
+  } catch (e) {
+    console.log(e)
+    console.log('No fue posible borrar el video')
+  }
+  showConfirm.value = false
+  idDeleted = 0
 }
 
 onMounted(async () => await getVideoList())
@@ -91,9 +127,52 @@ onMounted(async () => await getVideoList())
 
     <div class="columns is-multiline pt-5 mt-5">
       <template v-for="video in videoList">
-        <ItemList :item="video" />
+        <ItemList :item="video" @select-img="showVideo" @delete-img="deleteVideo" />
       </template>
+    </div>
+
+    <div class="modal" :class="{ 'is-active': showConfirm }">
+      <div class="modal-background"></div>
+      <div class="modal-content">
+        <div class="box new-container">
+          <button class="delete top-right" @click="cancelDelete"></button>
+          <div class="columns">
+            <div class="column is-full">
+              <p class="title is-5 py-3">¿Seguro que quieres eliminar este video?</p>
+              <div class="columns is-centered">
+                <div class="column is-4 is-offset-one-quarter">
+                  <div class="field">
+                    <div class="control">
+                      <button class="button is-info is-outlined is-fullwidth" @click="cancelDelete">Cancelar</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="column is-4">
+                  <div class="field">
+                    <div class="control">
+                      <button class="button is-link is-fullwidth" @click="confirmDelete">Eliminar</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
   </div>
 </template>
+
+<style scoped>
+.new-container {
+  position: relative;
+  text-align: left;
+}
+
+.top-right {
+  position: absolute;
+  top: 12px;
+  right: 16px
+}
+</style>
