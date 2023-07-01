@@ -11,7 +11,7 @@ const notificationClass = computed(() => {
 <template>
   <div class="columns is-centered ">
     <div class="column is-half not-over">
-      <div class="notification is-light" :class="notificationClass">
+      <div class="notification" :class="notificationClass">
         <button class="delete" @click="$emit('closeNot')"></button>
         {{ props.msg }}
       </div>
