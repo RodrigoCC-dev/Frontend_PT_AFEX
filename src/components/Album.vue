@@ -3,6 +3,7 @@ import { ref, onMounted, computed } from 'vue'
 import axios from 'axios'
 import ItemList from './ItemList.vue'
 import Modal from './Modal.vue'
+import Notification from './Notification.vue'
 
 let link = ''
 let videoData = {}
@@ -16,6 +17,13 @@ let hasError = ref({
   error: false,
   message: ''
 })
+let seeNot = ref(false)
+let notType = {
+  error: false,
+  warn: false,
+  success: false
+}
+let notMsg = ''
 
 const videoIdList = computed(() => {
   let list = []
@@ -87,18 +95,22 @@ async function getInfo() {
           await axios.post(apiUrl + '/album', newVideo)
           getVideoList()
           link = ''
+          setNotification('success', 'Se ha agregado exitósamente el video al album')
         } catch (e) {
-          console.log('No fue posible agregar el video')
+          try {
+            setNotification('error', e.response.data.error)
+          } catch {
+            setNotification('error', 'No fue posible agregar el video. Por favor, intente nuevamente.')
+          }
         }
-      } catch (e) {
-        console.log('Hubo un error al obtener la data')
+      } catch {
+        setNotification('warn', 'No fue posible obtener los datos del video. Por favor, verifique el enlace e intente nuevamente.')
       }
     } else {
       hasError.value.error = true
       hasError.value.message = 'El video asociado al enlace ya se encuentra presente en el album. Por favor, verificar.'
     }
   } else {
-    console.log('Dirección no es enlace de youtube válido')
     hasError.value.error = true
     hasError.value.message = 'Dirección ingresada no es un enlace de Youtube válido. Por favor, verificar.'
   }
@@ -128,9 +140,13 @@ async function confirmDelete() {
   try {
     const response = await axios.delete(apiUrl + '/album/' + idDeleted)
     getVideoList()
+    setNotification('success', 'El video fue eliminado exitósamente.')
   } catch (e) {
-    console.log(e)
-    console.log('No fue posible borrar el video')
+    try {
+      setNotification('error', e.response.data.error)
+    } catch {
+      setNotification('error', 'No fue posible eliminar el video. Por favor, intente nuevamente.')
+    }
   }
   showConfirm.value = false
   idDeleted = 0
@@ -141,6 +157,29 @@ function cleanError() {
   hasError.value.message = ''
 }
 
+function setNotification(type, msg) {
+  if (Object.keys(notType).includes(type)) {
+    notType[type] = true
+  } else {
+    notType.error = true
+  }
+  notMsg = msg
+  seeNot.value = true
+  autoCloseNot()
+}
+
+function closeNot() {
+  seeNot.value = false
+  notMsg = ''
+  Object.keys(notType).forEach((key) => {
+    notType[key] = false
+  })
+}
+
+function autoCloseNot() {
+  setTimeout(() => {closeNot()}, 5000)
+}
+
 onMounted(async () => await getVideoList())
 
 </script>
@@ -148,7 +187,11 @@ onMounted(async () => await getVideoList())
 <template>
   <div class="container">
 
-    <div class="my-5 pb-5">
+    <template v-if="seeNot">
+      <Notification :msg="notMsg" :notClass="notType" @close-not="closeNot" />
+    </template>
+
+    <div class="my-5 py-5">
       <div class="content">
         <h2>Añadir nuevo video</h2>
       </div>
