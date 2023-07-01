@@ -1,8 +1,9 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import axios from 'axios'
 import ItemList from './ItemList.vue'
 import Modal from './Modal.vue'
+import Notification from './Notification.vue'
 
 let link = ''
 let videoData = {}
@@ -12,6 +13,25 @@ let showConfirm = ref(false)
 let idDeleted = 0
 let showModal = ref(false)
 let itemShow = {}
+let hasError = ref({
+  error: false,
+  message: ''
+})
+let seeNot = ref(false)
+let notType = {
+  error: false,
+  warn: false,
+  success: false
+}
+let notMsg = ''
+
+const videoIdList = computed(() => {
+  let list = []
+  videoList.value.forEach((item) => {
+    list.push(item.youtubeId)
+  })
+  return list
+})
 
 async function getVideoList() {
   try {
@@ -39,6 +59,10 @@ function isValidUrl() {
   return aux.includes('www.youtube.com') || aux.includes('youtu.be')
 }
 
+function isPresentVideoId(id) {
+  return videoIdList.value.includes(id)
+}
+
 function getTime(duration) {
   let list = []
   const aux = duration.replace('H', ':').replace('M', ':')
@@ -54,30 +78,41 @@ function getTime(duration) {
 async function getInfo() {
   if (isValidUrl()) {
     let videoId = getVideoId()
-    let url = 'https://www.googleapis.com/youtube/v3/videos?id=' + videoId + '&key=' + import.meta.env.VITE_API_KEY + '&part=snippet%2CcontentDetails'
-    try {
-      const response = await axios.get(url)
-      videoData = response.data
-      const newVideo = {
-        videoId: videoData.items[0].id,
-        title: videoData.items[0].snippet.title,
-        description: videoData.items[0].snippet.description,
-        mediumUrl: videoData.items[0].snippet.thumbnails.medium.url,
-        stdUrl: videoData.items[0].snippet.thumbnails.standard.url,
-        duration: getTime(videoData.items[0].contentDetails.duration)
-      }
+    if (!isPresentVideoId(videoId)) {
+      let url = 'https://www.googleapis.com/youtube/v3/videos?id=' + videoId + '&key=' + import.meta.env.VITE_API_KEY + '&part=snippet%2CcontentDetails'
       try {
-        await axios.post(apiUrl + '/album', newVideo)
-        getVideoList()
-        link = ''
-      } catch (e) {
-        console.log('No fue posible agregar el video')
+        const response = await axios.get(url)
+        videoData = response.data
+        const newVideo = {
+          videoId: videoData.items[0].id,
+          title: videoData.items[0].snippet.title,
+          description: videoData.items[0].snippet.description,
+          mediumUrl: videoData.items[0].snippet.thumbnails.medium.url,
+          stdUrl: videoData.items[0].snippet.thumbnails.standard.url,
+          duration: getTime(videoData.items[0].contentDetails.duration)
+        }
+        try {
+          await axios.post(apiUrl + '/album', newVideo)
+          getVideoList()
+          link = ''
+          setNotification('success', 'Se ha agregado exitósamente el video al album')
+        } catch (e) {
+          try {
+            setNotification('error', e.response.data.error)
+          } catch {
+            setNotification('error', 'No fue posible agregar el video. Por favor, intente nuevamente.')
+          }
+        }
+      } catch {
+        setNotification('warn', 'No fue posible obtener los datos del video. Por favor, verifique el enlace e intente nuevamente.')
       }
-    } catch (e) {
-      console.log('Hubo un error al obtener la data')
+    } else {
+      hasError.value.error = true
+      hasError.value.message = 'El video asociado al enlace ya se encuentra presente en el album. Por favor, verificar.'
     }
   } else {
-    console.log('Dirección no es enlace de youtube válido')
+    hasError.value.error = true
+    hasError.value.message = 'Dirección ingresada no es un enlace de Youtube válido. Por favor, verificar.'
   }
 }
 
@@ -105,12 +140,44 @@ async function confirmDelete() {
   try {
     const response = await axios.delete(apiUrl + '/album/' + idDeleted)
     getVideoList()
+    setNotification('success', 'El video fue eliminado exitósamente.')
   } catch (e) {
-    console.log(e)
-    console.log('No fue posible borrar el video')
+    try {
+      setNotification('error', e.response.data.error)
+    } catch {
+      setNotification('error', 'No fue posible eliminar el video. Por favor, intente nuevamente.')
+    }
   }
   showConfirm.value = false
   idDeleted = 0
+}
+
+function cleanError() {
+  hasError.value.error = false
+  hasError.value.message = ''
+}
+
+function setNotification(type, msg) {
+  if (Object.keys(notType).includes(type)) {
+    notType[type] = true
+  } else {
+    notType.error = true
+  }
+  notMsg = msg
+  seeNot.value = true
+  autoCloseNot()
+}
+
+function closeNot() {
+  seeNot.value = false
+  notMsg = ''
+  Object.keys(notType).forEach((key) => {
+    notType[key] = false
+  })
+}
+
+function autoCloseNot() {
+  setTimeout(() => {closeNot()}, 5000)
 }
 
 onMounted(async () => await getVideoList())
@@ -120,18 +187,23 @@ onMounted(async () => await getVideoList())
 <template>
   <div class="container">
 
-    <div class="my-5 pb-5">
+    <template v-if="seeNot">
+      <Notification :msg="notMsg" :notClass="notType" @close-not="closeNot" />
+    </template>
+
+    <div class="my-5 py-5">
       <div class="content">
         <h2>Añadir nuevo video</h2>
       </div>
       <div class="field has-addons">
         <div class="control is-expanded">
-          <input class="input" type="text" placeholder="Enlace youtube" v-model="link">
+          <input class="input" :class="{'is-danger' : hasError.error}" type="text" placeholder="Enlace youtube" @input="cleanError" v-model="link">
         </div>
         <div class="control">
           <a class="button px-6 is-info" @click="getInfo">Añadir</a>
         </div>
       </div>
+      <p class="help is-danger is-size-6">{{ hasError.message }}</p>
     </div>
 
     <div class="columns is-multiline pt-5 mt-5">
