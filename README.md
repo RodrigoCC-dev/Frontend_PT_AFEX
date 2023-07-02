@@ -71,9 +71,9 @@ Instalar Nginx en el servidor:
 sudo apt update
 sudo apt install nginx
 ```
-Habilitar Nginx en el firewall de ubuntu para conexiones __http__:
+Habilitar el puerto 80 en el firewall de ubuntu para conexiones __http__ con Nginx:
 ```
-sudo ufw allow 'Nginx HTTP'
+sudo ufw allow 80/tcp
 ```
 Verificar funcionamiento de Nginx:
 ```
@@ -134,7 +134,22 @@ sudo systemctl restart nginx
 ```
 
 ### Cambiar aplicación a HTTPS
-Habilitar Nginx en el firewall de ubuntu para conexiones __https__:
+Habilitar el puerto 443 en el firewall de ubuntu para conexiones __https__ con Nginx:
 ```
-sudo ufw allow 'Nginx HTTPS'
+sudo ufw allow 443/tcp
 ```
+
+## Casos de uso
+En esta sección se presentan las capturas de pantalla de la aplicación, logradas siguiendo las imágenes referenciales del [Figma](https://www.figma.com/file/YSU5uOCfGtRW8YnrHtA9eA/Caso-de-prueba) requerido para este sistema.
+### Vista *General*
+
+### Vista *Agregar video*
+
+### Vista *Despliegue de descripción*
+
+### Vista *Confirmar eliminación*
+
+### Mensajes de error
+#### Vista *Video repetido*
+#### Vista *Video inexistente*
+#### Vista *Enlace incorrecto*
