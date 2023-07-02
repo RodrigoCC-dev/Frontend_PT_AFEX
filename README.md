@@ -144,17 +144,17 @@ sudo ufw allow 443/tcp
 ## Casos de uso
 En esta sección se presentan las capturas de pantalla de la aplicación, logradas siguiendo las imágenes referenciales del [Figma](https://www.figma.com/file/YSU5uOCfGtRW8YnrHtA9eA/Caso-de-prueba) requerido para este sistema.
 ### Vista *General*
-[![Vista-General.png](https://i.postimg.cc/DZzL1vgg/Vista-General.png)](https://postimg.cc/MchnS8gM)
+[![Vista-General.png](https://i.postimg.cc/05XqsPBq/Vista-General.png)](https://postimg.cc/Z0NQPtmf)
 ### Vista *Agregar video*
-[![Vista-Agregar-video.png](https://i.postimg.cc/sgpYr0xp/Vista-Agregar-video.png)](https://postimg.cc/LJ8YkDzX)
+[![Vista-Agregar-video.png](https://i.postimg.cc/BnHWHDQq/Vista-Agregar-video.png)](https://postimg.cc/cvx5Nvnj)
 ### Vista *Despliegue de descripción*
-[![Vista-Despligue-de-descripci-n.png](https://i.postimg.cc/7Zv3jyHH/Vista-Despligue-de-descripci-n.png)](https://postimg.cc/CzNnfXnX)
+[![Vista-Despligue-de-descripci-n.png](https://i.postimg.cc/cLQjrSXC/Vista-Despligue-de-descripci-n.png)](https://postimg.cc/VJk4V3yP)
 ### Vista *Confirmar eliminación*
-[![Vista-Confirmar-eliminaci-n.png](https://i.postimg.cc/wTR5WBd4/Vista-Confirmar-eliminaci-n.png)](https://postimg.cc/mtRFkBk7)
+[![Vista-Confirmar-eliminaci-n.png](https://i.postimg.cc/4y72ZkYJ/Vista-Confirmar-eliminaci-n.png)](https://postimg.cc/8fGmBYd3)
 ### Mensajes de error
 #### Vista *Video repetido*
-[![ME-Video-repetido.png](https://i.postimg.cc/Dznqyd4R/ME-Video-repetido.png)](https://postimg.cc/0zX6VSfC)
+[![ME-Video-repetido.png](https://i.postimg.cc/VsJz5JMN/ME-Video-repetido.png)](https://postimg.cc/grbCTkg9)
 #### Vista *Video inexistente*
-[![ME-Video-inexistente.png](https://i.postimg.cc/mrj7czQk/ME-Video-inexistente.png)](https://postimg.cc/3yykVwfQ)
+[![ME-Video-inexistente.png](https://i.postimg.cc/Vs2mtzBW/ME-Video-inexistente.png)](https://postimg.cc/5j5hddrX)
 #### Vista *Enlace incorrecto*
-[![ME-Enlace-incorrecto.png](https://i.postimg.cc/66mLLvFG/ME-Enlace-incorrecto.png)](https://postimg.cc/4np9XmfJ)
+[![ME-Enlace-incorrecto.png](https://i.postimg.cc/rpykTsMM/ME-Enlace-incorrecto.png)](https://postimg.cc/XrPhcVrz)
