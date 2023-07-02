@@ -77,7 +77,7 @@ sudo ufw allow 80/tcp
 ```
 Verificar funcionamiento de Nginx:
 ```
-sudo service status nginx
+sudo systemctl status nginx
 ```
 #### Configuración de la aplicación en producción
 Ingresar al directorio de trabajo. Para ejemplificar se utiliza la carpeta */opt* del sistema. Clonar el repositorio con permisos de superusuario:
@@ -104,16 +104,18 @@ VITE_BACK_DIR='Dirección_de_la_aplicación_Backend'  # Dirección host del back
 Instalar las dependencias y construir la aplicación:
 ```
 npm install
-npm build
+npm run build
+```
+Copiar la aplicación construida al directorio de trabajo de Nginx:
+```
+cd dist
+sudo cp -r ./ /usr/share/nginx/html
+cd ..
 ```
 Cambiar la configuración de Nginx a través del archivo de configuración de la aplicación y reiniciar el servicio con los siguientes comandos:
 ```
 sudo cp ./nginx.conf /etc/nginx/conf.d/default.conf
 sudo systemctl restart nginx
-```
-Copiar la aplicación construida al directorio de trabajo de Nginx:
-```
-cp dist /usr/share/nginx/html
 ```
 
 ### Actualizar la aplicación
@@ -125,11 +127,11 @@ git pull
 Instalar las nuevas dependencias de la aplicación y volver a construirla:
 ```
 npm install
-npm build
+npm run build
 ```
 Copiar la aplicación construida al directorio de trabajo de Nginx y reiniciarlo:
 ```
-cp dist /usr/share/nginx/html
+sudo cp -r dist /usr/share/nginx/html
 sudo systemctl restart nginx
 ```
 
@@ -142,14 +144,17 @@ sudo ufw allow 443/tcp
 ## Casos de uso
 En esta sección se presentan las capturas de pantalla de la aplicación, logradas siguiendo las imágenes referenciales del [Figma](https://www.figma.com/file/YSU5uOCfGtRW8YnrHtA9eA/Caso-de-prueba) requerido para este sistema.
 ### Vista *General*
-
+[![Vista-General.png](https://i.postimg.cc/DZzL1vgg/Vista-General.png)](https://postimg.cc/MchnS8gM)
 ### Vista *Agregar video*
-
+[![Vista-Agregar-video.png](https://i.postimg.cc/sgpYr0xp/Vista-Agregar-video.png)](https://postimg.cc/LJ8YkDzX)
 ### Vista *Despliegue de descripción*
-
+[![Vista-Despligue-de-descripci-n.png](https://i.postimg.cc/7Zv3jyHH/Vista-Despligue-de-descripci-n.png)](https://postimg.cc/CzNnfXnX)
 ### Vista *Confirmar eliminación*
-
+[![Vista-Confirmar-eliminaci-n.png](https://i.postimg.cc/wTR5WBd4/Vista-Confirmar-eliminaci-n.png)](https://postimg.cc/mtRFkBk7)
 ### Mensajes de error
 #### Vista *Video repetido*
+[![ME-Video-repetido.png](https://i.postimg.cc/Dznqyd4R/ME-Video-repetido.png)](https://postimg.cc/0zX6VSfC)
 #### Vista *Video inexistente*
+[![ME-Video-inexistente.png](https://i.postimg.cc/mrj7czQk/ME-Video-inexistente.png)](https://postimg.cc/3yykVwfQ)
 #### Vista *Enlace incorrecto*
+[![ME-Enlace-incorrecto.png](https://i.postimg.cc/66mLLvFG/ME-Enlace-incorrecto.png)](https://postimg.cc/4np9XmfJ)
