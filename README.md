@@ -46,9 +46,9 @@ Instalar las dependencias:
 ```
 npm install
 ```
-Generar archivo de variables de entorno de la aplicación copiando archivo .env-example a .env y editarlo:
+Generar archivo de variables de entorno de la aplicación copiando archivo .env_example a .env y editarlo:
 ```
-cp .env-example .env
+cp .env_example .env
 nano .env
 ```
 Cambiar valores de variables de entorno:
