@@ -138,10 +138,11 @@ sudo systemctl restart nginx
 ### Cambiar aplicación a HTTPS
 Para poder habilitar el trafico __http__ seguro en la aplicación, es necesario obtener el certificado *SSL* del sitio. Para obtener este certificado, se ha incluído un *script* que permite obtenerlo a través de [Let's Encrypt](https://letsencrypt.org/es/), haciendo uso de __acme.sh__ para su obtención. Para mayor información, consultar la [documentación oficial de acme.sh](https://github.com/acmesh-official/acme.sh). El *script* requiere que la aplicación esté desplegada en el puerto *80* a través de *Nginx*.
 
-Ingresar a la carpeta de la aplicación, otorgar permisos de ejecución al *script* y ejecutar:
+Para poder ejecutar todas las operaciones del *script*, se debe utilizar al usuario *root*. Para ello, ingresar a la carpeta de la aplicación, cambiar al usuario *root*, otorgar permisos de ejecución al *script* y ejecutar:
 ```
 cd /opt/frontend_pt_afex
-sudo chmod 775 Crear_SSL.sh
+sudo su
+chmod 775 Crear_SSL.sh
 ./Crear_SSL.sh
 ```
 Durante la ejecución del *script*, se creará la carpeta */certificates* donde quedarán guardados los archivos _*.key_ y _*.cer_ correspondientes.
