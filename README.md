@@ -77,7 +77,7 @@ sudo ufw allow 80/tcp
 ```
 Verificar funcionamiento de Nginx:
 ```
-sudo service status nginx
+sudo systemctl status nginx
 ```
 #### Configuración de la aplicación en producción
 Ingresar al directorio de trabajo. Para ejemplificar se utiliza la carpeta */opt* del sistema. Clonar el repositorio con permisos de superusuario:
@@ -104,16 +104,18 @@ VITE_BACK_DIR='Dirección_de_la_aplicación_Backend'  # Dirección host del back
 Instalar las dependencias y construir la aplicación:
 ```
 npm install
-npm build
+npm run build
+```
+Copiar la aplicación construida al directorio de trabajo de Nginx:
+```
+cd dist
+sudo cp -r ./ /usr/share/nginx/html
+cd ..
 ```
 Cambiar la configuración de Nginx a través del archivo de configuración de la aplicación y reiniciar el servicio con los siguientes comandos:
 ```
 sudo cp ./nginx.conf /etc/nginx/conf.d/default.conf
 sudo systemctl restart nginx
-```
-Copiar la aplicación construida al directorio de trabajo de Nginx:
-```
-cp dist /usr/share/nginx/html
 ```
 
 ### Actualizar la aplicación
@@ -125,15 +127,36 @@ git pull
 Instalar las nuevas dependencias de la aplicación y volver a construirla:
 ```
 npm install
-npm build
+npm run build
 ```
 Copiar la aplicación construida al directorio de trabajo de Nginx y reiniciarlo:
 ```
-cp dist /usr/share/nginx/html
+sudo cp -r dist /usr/share/nginx/html
 sudo systemctl restart nginx
 ```
 
 ### Cambiar aplicación a HTTPS
+Para poder habilitar el trafico __http__ seguro en la aplicación, es necesario obtener el certificado *SSL* del sitio. Para obtener este certificado, se ha incluído un *script* que permite obtenerlo a través de [Let's Encrypt](https://letsencrypt.org/es/), haciendo uso de __acme.sh__ para su obtención. Para mayor información, consultar la [documentación oficial de acme.sh](https://github.com/acmesh-official/acme.sh). El *script* requiere que la aplicación esté desplegada en el puerto *80* a través de *Nginx*.
+
+Para poder ejecutar todas las operaciones del *script*, se debe utilizar al usuario *root*. Para ello, ingresar a la carpeta de la aplicación, cambiar al usuario *root*, otorgar permisos de ejecución al *script* y ejecutar:
+```
+cd /opt/frontend_pt_afex
+sudo su
+chmod 775 Crear_SSL.sh
+./Crear_SSL.sh
+```
+Durante la ejecución del *script*, se creará la carpeta */certificates* donde quedarán guardados los archivos _*.key_ y _*.cer_ correspondientes.
+
+Editar el archivo *nginx_ssl.conf* incluido en la carpeta raíz de la aplicación, señalando la ubicación de los archivos _.key_ y _.cer_ en las siguientes líneas:
+```
+ssl_certificate       /opt/frontend_pt_afex/certificates/cert_file.cer;
+ssl_certificate_key   /opt/frontend_pt_afex/certificates/key_file.key;
+```
+Reemplazar la configuración de Nginx a través del nuevo archivo de configuración de la aplicación y reiniciar el servicio con los siguientes comandos:
+```
+sudo cp ./nginx_ssl.conf /etc/nginx/conf.d/default.conf
+sudo systemctl restart nginx
+```
 Habilitar el puerto 443 en el firewall de ubuntu para conexiones __https__ con Nginx:
 ```
 sudo ufw allow 443/tcp
@@ -141,15 +164,18 @@ sudo ufw allow 443/tcp
 
 ## Casos de uso
 En esta sección se presentan las capturas de pantalla de la aplicación, logradas siguiendo las imágenes referenciales del [Figma](https://www.figma.com/file/YSU5uOCfGtRW8YnrHtA9eA/Caso-de-prueba) requerido para este sistema.
-### Vista *General*
-
-### Vista *Agregar video*
-
-### Vista *Despliegue de descripción*
-
-### Vista *Confirmar eliminación*
-
+### Vista *general*
+[![Vista-General.png](https://i.postimg.cc/05XqsPBq/Vista-General.png)](https://postimg.cc/Z0NQPtmf)
+### Vista *agregar video*
+[![Vista-Agregar-video.png](https://i.postimg.cc/BnHWHDQq/Vista-Agregar-video.png)](https://postimg.cc/cvx5Nvnj)
+### Vista *despliegue de descripción*
+[![Vista-Despligue-de-descripci-n.png](https://i.postimg.cc/cLQjrSXC/Vista-Despligue-de-descripci-n.png)](https://postimg.cc/VJk4V3yP)
+### Vista *confirmar eliminación*
+[![Vista-Confirmar-eliminaci-n.png](https://i.postimg.cc/4y72ZkYJ/Vista-Confirmar-eliminaci-n.png)](https://postimg.cc/8fGmBYd3)
 ### Mensajes de error
-#### Vista *Video repetido*
-#### Vista *Video inexistente*
-#### Vista *Enlace incorrecto*
+#### Vista *video repetido*
+[![ME-Video-repetido.png](https://i.postimg.cc/VsJz5JMN/ME-Video-repetido.png)](https://postimg.cc/grbCTkg9)
+#### Vista *video inexistente*
+[![ME-Video-inexistente.png](https://i.postimg.cc/Vs2mtzBW/ME-Video-inexistente.png)](https://postimg.cc/5j5hddrX)
+#### Vista *enlace incorrecto*
+[![ME-Enlace-incorrecto.png](https://i.postimg.cc/rpykTsMM/ME-Enlace-incorrecto.png)](https://postimg.cc/XrPhcVrz)

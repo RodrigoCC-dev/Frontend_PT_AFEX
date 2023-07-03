@@ -25,5 +25,5 @@ read dominio
 
 # Copiar certificados creados en carpeta de acceso
 mkdir /certificates
-cp /root/.acme.sh/${dominio}/${dominio}.cer /certificates/cert_file.cer
-cp /root/.acme.sh/${dominio}/${dominio}.key /certificates/key_file.key
+cp /root/.acme.sh/${dominio}_ecc/${dominio}.cer /certificates/cert_file.cer
+cp /root/.acme.sh/${dominio}_ecc/${dominio}.key /certificates/key_file.key
