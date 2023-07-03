@@ -112,6 +112,16 @@ cd dist
 sudo cp -r ./ /usr/share/nginx/html
 cd ..
 ```
+Editar el archivo *nginx.conf* de configuración de la aplicación:
+```
+nano nginx.conf
+```
+Ingresar los siguientes datos en las siguientes líneas y guardar los cambios:
+```
+server_name Nombre_de_tu_servidor;                                  # Ejemplo: www.example.com
+
+add_header 'Access-Control-Allow-Origin' 'Nombre_de_tu_servidor';   # Ejemplo: 'http://www.example.com'
+```
 Cambiar la configuración de Nginx a través del archivo de configuración de la aplicación y reiniciar el servicio con los siguientes comandos:
 ```
 sudo cp ./nginx.conf /etc/nginx/conf.d/default.conf
@@ -151,6 +161,14 @@ Editar el archivo *nginx_ssl.conf* incluido en la carpeta raíz de la aplicació
 ```
 ssl_certificate       /opt/frontend_pt_afex/certificates/cert_file.cer;
 ssl_certificate_key   /opt/frontend_pt_afex/certificates/key_file.key;
+```
+Completar la configuración del archivo ingresando los valores necesarios en las siguientes líneas:
+```
+return 301 'Dirección_https_de_tu_sitio';         # Ej.: https://www.example.com
+
+server_name _;                                    # Ej.: www.example.com
+
+add_header 'Access-Control-Allow-Origin' 'Dirección_https_de_tu_sitio';   # Ej.: 'https://www.example.com'
 ```
 Reemplazar la configuración de Nginx a través del nuevo archivo de configuración de la aplicación y reiniciar el servicio con los siguientes comandos:
 ```
